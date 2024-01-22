@@ -21,6 +21,7 @@ class _MyHomePageState extends State<MyHomePage> {
   TextEditingController idUpdateController = TextEditingController();
   TextEditingController nameUpdateController = TextEditingController();
   TextEditingController milesUpdateController = TextEditingController();
+  TextEditingController idDeleteController = TextEditingController();
 
   void _showMessageInScaffold(String message) {
     ScaffoldMessenger.of(context)
@@ -55,6 +56,7 @@ class _MyHomePageState extends State<MyHomePage> {
           ),
           body: TabBarView(
             children: [
+              //INSERT
               Center(
                 child: Column(
                   children: [
@@ -88,6 +90,7 @@ class _MyHomePageState extends State<MyHomePage> {
                   ],
                 ),
               ),
+              //VİEW
               Container(
                 child: ListView.builder(
                     padding: const EdgeInsets.all(8),
@@ -113,6 +116,7 @@ class _MyHomePageState extends State<MyHomePage> {
                       );
                     }),
               ),
+              //QUERY
               Center(
                 child: Column(
                   children: [
@@ -160,8 +164,10 @@ class _MyHomePageState extends State<MyHomePage> {
                   ],
                 ),
               ),
-              Center(
-                child: SingleChildScrollView(
+
+              //UPDATE
+              SingleChildScrollView(
+                child: Center(
                   child: Column(
                     children: [
                       Container(
@@ -196,16 +202,42 @@ class _MyHomePageState extends State<MyHomePage> {
                       ),
                       ElevatedButton(
                           onPressed: () {
-                            String name = nameController.text;
-                            int miles = int.parse(milesController.text);
-                            _insert(name, miles);
+                            int id = int.parse(idUpdateController.text);
+                            String name = nameUpdateController.text;
+                            int miles = int.parse(milesUpdateController.text);
+                            _update(id, name, miles);
                           },
                           child: const Text('Update Car Details'))
                     ],
                   ),
                 ),
               ),
-              const Center(),
+              //DELETE
+              SingleChildScrollView(
+                child: Center(
+                  child: Column(
+                    children: [
+                      Container(
+                        padding: const EdgeInsets.all(20),
+                        child: TextField(
+                          controller: idDeleteController,
+                          decoration: const InputDecoration(
+                            border: OutlineInputBorder(),
+                            labelText: 'Car ID',
+                          ),
+                        ),
+                      ),
+                      ElevatedButton(
+                          onPressed: () {
+                            int id = int.parse(idDeleteController.text);
+
+                            _delete(id);
+                          },
+                          child: const Text('Delete Car Details'))
+                    ],
+                  ),
+                ),
+              ),
             ],
           ),
         ));
@@ -233,5 +265,16 @@ class _MyHomePageState extends State<MyHomePage> {
     final allRows = await dbHelper.queryRows(name);
     carsByName.clear();
     allRows.forEach((row) => carsByName.add(Car.fromMap(row)));
+  }
+
+  void _update(int id, String name, int miles) async {
+    Car car = Car(id, name, miles);
+    final rowAffected = await dbHelper.update(car);
+    _showMessageInScaffold('Updated $rowAffected row(s)');
+  }
+
+  void _delete(int id) async {
+    final rowDeleted = await dbHelper.delete(id);
+    _showMessageInScaffold('Deleted $rowDeleted row(s) : rows $id');
   }
 }

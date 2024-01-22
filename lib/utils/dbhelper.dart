@@ -35,8 +35,8 @@ class DatabaseHelper {
 CREATE TABLE $table(
 $columnId INTEGER PRIMARY KEY AUTOINCREMENT,
 $columnName TEXT NOT NULL,
-$columnMiles INTEGER NOT NULL,
-
+$columnMiles INTEGER NOT NULL
+)
 ''');
   }
 
